@@ -1,0 +1,86 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <cassert>
+using namespace std;
+
+void print(const vector<vector<string> >& data) {
+  ostream_iterator<string> output(cout, ",");
+  vector<vector<string> >::const_iterator itr;
+  for (itr = data.begin(); data.end() != itr; ++itr) {
+    copy(itr->begin(), itr->end(), output);
+    cout << endl;
+  }
+}
+
+void print_vec(const vector<string>& data) {
+  ostream_iterator<string> output(cout, ",");
+  copy(data.begin(), data.end(), output);
+  cout << endl;
+}
+
+bool is_palindrome(const string& ori_str, int start, int end) {
+  // [start, end]
+  assert(end >= start && start >= 0 && end < ori_str.size());
+  if (start == end) return false;
+  while (end > start) {
+    if (ori_str[start] != ori_str[end]) break;
+    ++start;
+    --end;
+  }
+  if (end <= start) return true;
+  return false;
+}
+
+void find_and_patch(const string& ori_str, int start_idx, vector<vector<string> >& all, int index_in_all) {
+  //cout << "find_and_patch("<< ori_str << " , " << start_idx << ", all, " << index_in_all <<")" << endl;
+  if (start_idx >= ori_str.size()) return;
+  int accu_len = 0;
+  int j = 0;
+  vector<string> tmp;
+  for (int i = start_idx + 1; i < ori_str.size(); ++i) {
+    if (!is_palindrome(ori_str, start_idx, i)) continue;
+    accu_len = 0;
+    j = 0;
+    tmp.clear();
+    while(accu_len < start_idx) {
+      tmp.push_back(all[index_in_all][j]);
+      accu_len += all[index_in_all][j].size();
+      ++j;
+    }
+    tmp.push_back(ori_str.substr(start_idx, i - start_idx + 1));
+    for (int k = i + 1; k < ori_str.size(); ++k) {
+      tmp.push_back(string(1, ori_str[k]));
+    }
+    all.push_back(tmp);
+    //print_vec(tmp);
+    find_and_patch(ori_str, i + 1, all, all.size() - 1);
+  }
+  find_and_patch(ori_str, start_idx + 1, all, index_in_all);
+}
+
+vector<vector<string> > partition(string s) {
+  vector<vector<string> > t;
+  vector<string> tmp;
+  //copy(s.begin(), s.end(), back_inserter(tmp));
+  for (int i = 0; i != s.size(); ++i) {
+    tmp.push_back(string(1, s[i]));
+  }
+  t.push_back(tmp);
+  find_and_patch(s, 0, t, 0);
+  return t;
+}
+
+int main() {
+  string s = "aab";
+  vector<vector<string> > a;
+  while (cin >> s) {
+    cout << "=======================" << endl;
+    a = partition(s);
+    print(a);
+    cout << endl;
+  }
+  return 0;
+}
