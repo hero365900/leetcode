@@ -1,0 +1,58 @@
+#include <iostream>
+using namespace std;
+
+struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+int _maxPathSum(TreeNode *root, int& m, bool& usable) {
+  if (root == NULL) {m = 0; usable = false; return 0;}
+  usable = true;
+  int left_max(0), right_max(0), left_val(0), right_val(0);
+  bool left_usable(false), right_usable(false);
+  left_max = _maxPathSum(root->left, left_val, left_usable);
+  right_max = _maxPathSum(root->right, right_val, right_usable);
+  m = max(root->val + left_val, root->val + right_val);
+  m = max(m, root->val);
+  //int tmp(left_val + right_val + root->val);
+  int tmp = root->val;
+  if (left_val > 0) tmp += left_val;
+  if (right_val > 0) tmp += right_val;
+  if (left_usable) tmp = max(tmp, left_max);
+  if (right_usable) tmp = max(tmp, right_max);
+  return tmp;
+}
+
+int maxPathSum(TreeNode *root) {
+  int t;
+  bool usable(false);
+  int k = _maxPathSum(root, t, usable);
+  //cout << "t = " << t << endl;
+  return k;
+}
+
+int main() {
+  /*TreeNode *root = new TreeNode(1);
+  root->left = new TreeNode(10);
+  root->right = new TreeNode(20);
+  TreeNode *tmp(NULL);
+  tmp = new TreeNode(50);
+  root->left->left = tmp;
+  tmp->left = new TreeNode(-10);
+  tmp->right = new TreeNode(-20);
+  tmp = new TreeNode(-10);
+  root->left->right = tmp;
+  tmp->left = new TreeNode(-50);
+  tmp->right = new TreeNode(-40);
+  root->right->left = new TreeNode(30);
+  root->right->left->right = new TreeNode(40);
+  cout << maxPathSum(root) << endl;*/
+  TreeNode *root = new TreeNode(10);
+  root->left = new TreeNode(-5);
+  root->left = new TreeNode(5);
+  cout << maxPathSum(root) << endl;
+  return 0;
+}
