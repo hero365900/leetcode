@@ -1,0 +1,137 @@
+#include <iostream>
+#include <map>
+#include <list>
+#include <queue>
+#include <vector>
+#include <iterator>
+#include <set>
+#include <tr1/unordered_set>
+#include <iterator>
+#include <algorithm>
+using namespace std;
+using namespace std::tr1;
+
+void print(const vector<vector<string> >& data) {
+  ostream_iterator<string> output(cout, ", ");
+  for (int i  = 0; i != data.size(); ++i) {
+    copy(data[i].begin(), data[i].end(), output);
+    cout << endl;
+  }
+}
+
+void copyResult(const string& end, const map<string, list<string> >& data, list<string>& cur, vector<vector<string> >& result) {
+  if (cur.back() == end) {
+    result.push_back(vector<string>(cur.begin(), cur.end()));
+    return;
+  }
+  if(0 == data.count(cur.back())) return;
+  list<string>::const_iterator list_itr;
+  map<string, list<string> >::const_iterator map_itr = data.find(cur.back());
+  if (data.end() == map_itr) return;
+  for (list_itr = map_itr->second.begin(); map_itr->second.end() != list_itr; ++list_itr) {
+    cur.push_back(*list_itr);
+    copyResult(end, data, cur, result);
+    cur.erase(--cur.end());
+  }
+}
+
+void print_adj(const map<string, list<string> >& data) {
+  ostream_iterator<string> output(cout, " ");
+  map<string, list<string> >::const_iterator itr;
+  for (itr = data.begin(); data.end() != itr; ++itr) {
+    cout << itr->first << " -> ";
+    copy(itr->second.begin(), itr->second.end(), output);
+    cout << endl;
+  }
+}
+
+vector<vector<string> > ladderLength(string start, string end, unordered_set<string> &dict) {
+  //queue<string> discover;
+  set<string> *curLevel = new set<string>();
+  set<string> *nextLevel = new set<string>();
+  typedef set<string>::const_iterator set_itr;
+  map<string, string> parents;
+  vector<vector<string> > result;
+  map<string, list<string> > media;
+
+  curLevel->insert(start);
+  parents[start] = start;
+
+  int dist(1), mindist(dict.size() + 2);
+  string head;
+  string tmp;
+  string q;
+  while (!curLevel->empty()) {
+    for (set_itr itr = curLevel->begin(); curLevel->end() != itr; ++itr) {
+      head = *itr;
+      for (int i = 0; i != start.length(); ++i) {
+	tmp = head;
+	for (int j = 'a'; j <= 'z'; ++j) {
+	  if (j == head[i]) continue;
+	  tmp[i] = j;
+	  if (tmp == end) {
+	    if (dist < mindist) mindist = dist;
+	    if (dist == mindist) {
+	      if (0 == media.count(head)) {
+		media.insert(make_pair(head, list<string>()));
+	      }
+	      media[head].push_back(end);
+	    }
+	    continue;
+	  }
+	  if ((0 != dict.count(tmp)) && (0 == curLevel->count(tmp))) {
+	    if (0 == media.count(head)) {
+	      media.insert(make_pair(head, list<string>()));
+	    }
+	    nextLevel->insert(tmp);
+	    media[head].push_back(tmp);
+	  }
+	}
+      }
+    } // end curLevel
+    ++dist;
+    if (dist > mindist) break;
+    unordered_set<string>::iterator uitr;
+    for (set_itr itr = curLevel->begin(); curLevel->end() != itr; ++itr) {
+      uitr = dict.find(*itr);
+      if (dict.end() != uitr) {
+	dict.erase(uitr);
+      }
+    }
+    curLevel->clear();
+    swap(nextLevel, curLevel);
+  }  // end while
+  //print_adj(media);
+  list<string> k;
+  k.push_back(start);
+  copyResult(end, media, k, result);
+  return result;
+}
+
+int main() {
+  // "hot","dot","dog","lot","log"A
+  vector<vector<string> > result;
+  /*"ted","tex","red","tax","tad","den","rex","pee"*/
+  unordered_set<string> wg;
+  wg.insert("ted");
+  wg.insert("tex");
+  wg.insert("red");
+  wg.insert("tax");
+  wg.insert("tad");
+  wg.insert("den");
+  wg.insert("rex");
+  wg.insert("pee");
+  /*wg.Insert("cat");
+  wg.Insert("cap");
+  wg.Insert("can");
+  wg.Insert("bug");
+  wg.Insert("hit");
+  wg.Insert("cog");*/
+  result = ladderLength("red", "tax", wg);
+  print(result);
+  cout << result.size() << endl;
+
+  //wg.print_graph();
+  //wg.BFS("hit");
+  return 0;
+}
