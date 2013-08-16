@@ -1,0 +1,74 @@
+#include <iostream>
+#include <vector>
+#include <iterator>
+using namespace std;
+
+void print(const vector<int>& vec) {
+  ostream_iterator<int> output(cout, " ");
+  copy(vec.begin(), vec.end(), output);
+  cout << endl;
+}
+
+int maxSum(vector<int>& data, int start, int end, int &mstart, int &mend) {
+  if (end - start == 1) return data[start];
+  int maxSum = data[start];
+  int sum = data[start];
+  for (int i = start; i != end; ++i) {
+    sum = max(sum + data[i], data[i]);
+    if (sum > maxSum) {maxSum = sum; mend = i;}
+    if (sum < 0) {sum = 0;}
+  }
+  sum = maxSum;
+  mstart = 0;
+  for (mstart = mend; mstart >= start; --mstart) {
+    if ((sum -= data[mstart]) == 0) {break;}
+  }
+  return maxSum;
+}
+
+int maxProfit(vector<int> &prices) {
+  if(prices.size() < 2) return 0;
+  //vector<int> prices_diff(prices.size() - 1, 0);
+  for (int i = 1 ; i != prices.size(); ++i) {
+    prices[i - 1] = prices[i] - prices[i - 1];
+  }
+  //print(prices);
+  vector<int> end_i_max(prices.size() - 1, 0);
+  end_i_max[prices.size() - 2] = prices[prices.size() - 2];
+  for (int i = prices.size() - 3; i >= 0; --i) {
+    end_i_max[i] = max(end_i_max[i + 1] + prices[i], prices[i]);
+  }
+  //print(end_i_max);
+  //if (end_i_max[end_i_max.size() - 1] < 0) end_i_max[end_i_max.size() - 1] = 0;
+  if (end_i_max.back() < 0) end_i_max.back() = 0;
+  for (int i = end_i_max.size() - 2; i >= 0; --i) {
+    if (end_i_max[i] < end_i_max[i + 1]) end_i_max[i] = end_i_max[i + 1];
+  }
+  //print(end_i_max);
+  int sum(0), maxSum(prices[0]), maxTotal(end_i_max[0]);
+  for(int i = 0; i != prices.size() - 2; ++i) {
+    sum = max(sum + prices[i], prices[i]);
+    if (sum < 0) sum = 0;
+    if (sum + end_i_max[i + 1] > maxTotal) {maxTotal = sum + end_i_max[i + 1];}
+  }
+  return maxTotal;
+}
+
+int main() {
+  //3,2,6,5,0,3
+  // [1,2,4,2,5,7,2,4,9,0]
+  int a[] = {3,2,6,5,0,3};
+  int b[] = {-1, 4, -1, -5, 3};
+  int c[] = {1, 2, 4};
+  int d[] = {1,2,4,2,5,7,2,4,9,0};
+  int e[] = {2,1,2,0,1};
+  vector<int> t((int*)c, (int*)c + 3);
+  vector<int> q((int*)b, (int*)b + 5);
+  vector<int> r((int*)e, (int*)e + 5);
+  //cout << maxProfit(t) << endl;
+  //cout << maxSum(q, 0, q.size(), s, e) << endl;
+  cout << maxProfit(r) << endl;
+  //cout << "start = " << s << endl;
+  //cout << "end = " << e << endl;
+  return 0;
+}
