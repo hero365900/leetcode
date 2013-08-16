@@ -1,0 +1,40 @@
+#include <iostream>
+#include <vector>
+#include <iterator>
+using namespace std;
+
+void print(const vector<vector<int> >& data) {
+  ostream_iterator<int> output(cout, " ");
+  for (int i = 0; i != data.size(); ++i) {
+    copy(data[i].begin(), data[i].end(), output);
+    cout << endl;
+  }
+}
+
+vector<vector<int> > generate(int numRows) {
+  vector<int> *last(NULL), *cur(NULL);
+  vector<vector<int> > result;
+  if (numRows <= 0) return result;
+  result.push_back(vector<int>(1, 1));
+  int len;
+  for (int row_idx = 1; row_idx != numRows; ++row_idx) {
+    len = result[row_idx - 1].size();
+    result.push_back(vector<int>(len + 1, 0));
+    cur = &(result.back());
+    for (int col_idx = 0; col_idx != len + 1; ++col_idx) {
+      if (col_idx == 0) {result[row_idx][col_idx] = result[row_idx - 1][col_idx]; continue;}
+      if (col_idx == len) {result[row_idx][col_idx] = result[row_idx - 1][col_idx - 1]; continue;}
+      result[row_idx][col_idx] = result[row_idx - 1][col_idx - 1] + result[row_idx - 1][col_idx];
+    }
+  }
+}
+
+int main() {
+  int n;
+  vector<vector<int> > data;
+  while (cin >> n) {
+    data = generate(n);
+    print(data);
+  }
+  return 0;
+}
