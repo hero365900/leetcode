@@ -1,0 +1,38 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int maxProfit(vector<int> &prices) {
+  if(prices.size() < 2) return 0;
+  //vector<int> prices_diff(prices.size() - 1, 0);
+  for (int i = 1 ; i != prices.size(); ++i) {
+    prices[i - 1] = prices[i] - prices[i - 1];
+  }
+  int sum = 0;
+  for (int i = 0; i != prices.size() - 1; ++i) {
+    if (prices[i] > 0) sum += prices[i]; 
+  }
+  return sum;
+}
+
+int maxSum(vector<int>& prices_diff) {
+  int maxSum = prices_diff[0];
+  int sum = prices_diff[0];
+  for (int i = 1; i != prices_diff.size(); ++i) {
+    sum = max(sum + prices_diff[i], prices_diff[i]);
+    if (sum > maxSum) {maxSum = sum;}
+    if (sum < 0) sum = 0;
+  }
+  return maxSum;
+}
+
+int main() {
+  //3,2,6,5,0,3
+  int a[] = {3,2,6,5,0, 3};
+  int b[] = {-1, 4, -1, -5, 3};
+  vector<int> t((int*)a, (int*)a + 6);
+  vector<int> q((int*)b, (int*)b + 5);
+  cout << maxProfit(t) << endl;
+  //cout << maxSum(q) << endl;
+  return 0;
+}
