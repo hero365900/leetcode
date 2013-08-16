@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int _minimumTotal(vector<vector<int> > &triangle, int row_idx, int col_idx, int *edge_per_row) {
+  if (row_idx == triangle.size() - 1) {
+    edge_per_row[row_idx] = col_idx + 1;
+    return triangle[row_idx][col_idx];
+  }
+  int left(0);
+  if (edge_per_row[row_idx + 1] > col_idx) {
+    left = triangle[row_idx + 1][col_idx];
+  } else {
+    left = _minimumTotal(triangle, row_idx + 1, col_idx, edge_per_row);
+  }
+  int right = _minimumTotal(triangle, row_idx + 1, col_idx + 1, edge_per_row);
+  //cout << "edge_per_row[" << row_idx << "] : " << edge_per_row[row_idx] << " --> ";
+  edge_per_row[row_idx] = col_idx + 1;
+  //cout << edge_per_row[row_idx] << endl;
+  return triangle[row_idx][col_idx] = triangle[row_idx][col_idx] + min(left, right);
+}
+
+int minimumTotal(vector<vector<int> > &triangle) {
+  if (triangle.empty() || triangle[0].empty()) return 0;
+  int *edge_per_row = new int[triangle.size()];
+  for (int i = 0; i != triangle.size(); ++i) {
+    edge_per_row[i] = 0;
+  }
+  return _minimumTotal(triangle, 0, 0, edge_per_row);
+}
+
+int main() {
+  int a1[] = {2};
+  int a2[] = {3, 4};
+  int a3[] = {6 ,5, 7};
+  int a4[] = {4, 1, 8, 3};
+  vector<vector<int> > t;
+  t.push_back(vector<int>((int*)a1, (int*)a1 + 1));
+  t.push_back(vector<int>((int*)a2, (int*)a2 + 2));
+  t.push_back(vector<int>((int*)a3, (int*)a3 + 3));
+  t.push_back(vector<int>((int*)a4, (int*)a4 + 4));
+  cout << minimumTotal(t) << endl;
+  return 0;
+}
