@@ -1,0 +1,49 @@
+#include <iostream>
+#include <vector>
+#include <iterator>
+using namespace std;
+
+void print(const vector<vector<int> >& data) {
+  ostream_iterator<int> output(cout, " ");
+  for (int i = 0; i != data.size(); ++i) {
+    copy(data[i].begin(), data[i].end(), output);
+    cout << endl;
+  }
+}
+
+vector<int> getRow(int rowIndex) {
+  vector<int> result;
+  if (rowIndex == 0) {
+    result.push_back(1);
+    return result;
+  }
+  if (rowIndex == 1) {
+    result.push_back(1);
+    result.push_back(1);
+    return result;
+  }
+  result.resize(rowIndex + 1);
+  vector<int> a(rowIndex + 1);
+  vector<int> *pa(&a), *pr(&result);
+  for (int i = 0; i <= rowIndex; ++i) {
+    for (int j = 0;  j != i + 1; ++j) {
+      if (j == 0) {(*pr)[j] = 1; continue;}
+      if (j == i) {(*pr)[j] = 1; continue;}
+      (*pr)[j] = pa->at(j - 1) + pa->at(j);
+    }
+    swap(pa, pr);
+  }
+  return *pa;
+}
+
+int main() {
+  int n;
+  vector<int> r;
+  ostream_iterator<int> output(cout, " ");
+  while (cin >> n) {
+    r = getRow(n);
+    copy(r.begin(), r.end(), output);
+    cout << endl;
+  }
+  return 0;
+}
