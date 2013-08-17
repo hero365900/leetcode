@@ -1,0 +1,62 @@
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+void print(TreeNode *root) {
+  TreeNode *cursor = root;
+  while (cursor) {
+    if (cursor->left) {
+      cout << "Error" << endl;
+      return;
+    }
+    cout << cursor->val << "->";
+    cursor = cursor->right;
+  }
+  cout << endl;
+}
+
+TreeNode* _flatten(TreeNode *root) {
+  //if (root == NULL) return NULL;
+  if (root->left == NULL && root->right == NULL) return root;
+  TreeNode *left_last(NULL), *right_last(NULL), *left_child(NULL), *right_child(NULL);
+  if (root->left) {
+    left_last = _flatten(root->left);
+    left_last->left = NULL;
+  }
+  if (root->right) {
+    right_last = _flatten(root->right);
+    right_last->left = NULL;
+  }
+  if (left_last) {
+    right_child = root->right;
+    root->right = root->left;
+    root->left = NULL;
+    left_last->right = right_child;
+  }
+  if (right_last == NULL) return left_last;
+  else return right_last;
+}
+
+void flatten(TreeNode *root) {
+  if (root == NULL) return;
+  _flatten(root);
+}
+
+int main() {
+  TreeNode *root = new TreeNode(1);
+  root->left = new TreeNode(2);
+  root->right= new TreeNode(5);
+  root->left->left = new TreeNode(3);
+  root->left->right= new TreeNode(4);
+  root->right->right= new TreeNode(6);
+  flatten(root);
+  print(root);
+  return 0;
+}
