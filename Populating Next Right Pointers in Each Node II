@@ -1,0 +1,71 @@
+#include <iostream>
+using namespace std;
+
+struct TreeLinkNode {
+  TreeLinkNode *left;
+  TreeLinkNode *right;
+  TreeLinkNode *next;
+  int val;
+  TreeLinkNode(int x) : val(x), left(NULL), right(NULL), next(NULL) {}
+};
+
+void print_levelbylevel(TreeLinkNode *root) {
+  TreeLinkNode *head(root), *cursor(NULL);
+  while (head != NULL) {
+    cursor = head;
+    while (cursor) {
+     cout << cursor->val << ", ";
+     cursor = cursor->next;
+    }
+    cout << endl;
+    while (head && head->left == NULL && head->right == NULL) {
+      head = head->next;
+    }
+    if (head == NULL) break;
+    head = (head->left ? head->left : head->right);
+  }
+}
+
+void connect(TreeLinkNode *root) {
+  TreeLinkNode *head(root), *cursor(NULL), *pcursor(NULL), *newhead(NULL);
+  if (root == NULL) return;
+  if (root->left == NULL && root->right == NULL) {root->next = NULL; return;}
+  root->next = NULL;
+  while (head) {
+    while (head && head->left == NULL && head->right == NULL) {
+      head = head->next;
+    }
+    if (head == NULL) break;  // finish connect
+    newhead = (head->left ? head->left : head->right);
+    cursor = newhead;
+    pcursor = head;
+    while (cursor != NULL) {
+      if (cursor == pcursor->left && pcursor->right) {
+        cursor->next = pcursor->right;
+        cursor = cursor->next;
+        continue;
+      }
+      pcursor = pcursor->next;
+      while (pcursor && pcursor->left == NULL && pcursor->right == NULL) {
+        pcursor = pcursor->next;
+      }
+      if (pcursor == NULL) {cursor->next = NULL; break;}
+      cursor->next = (pcursor->left ? pcursor->left : pcursor->right);
+      cursor = cursor->next;
+    }
+    head = newhead;
+  }
+}
+
+int main() {
+  TreeLinkNode *root = new TreeLinkNode(1);
+  root->left = new TreeLinkNode(2);
+  root->right = new TreeLinkNode(3);
+  root->left->left = new TreeLinkNode(4);
+  root->left->right = new TreeLinkNode(5);
+  root->right->left = new TreeLinkNode(6);
+  root->right->right= new TreeLinkNode(7);
+  connect(root);
+  print_levelbylevel(root);
+  return 0;
+}
