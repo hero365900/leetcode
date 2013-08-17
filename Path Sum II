@@ -1,0 +1,61 @@
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <vector>
+using namespace std;
+
+struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+void print(const vector<vector<int> >& result) {
+  ostream_iterator<int> output(cout, ", ");
+  for (int i = 0; i != result.size(); ++i) {
+    copy(result[i].begin(), result[i].end(), output);
+    cout << endl;
+  }
+}
+
+void _pathSum(TreeNode *root, int sum, list<int>& path, vector<vector<int> >& result) {
+  int remain = sum - root->val;
+  if (root->left == NULL && root->right == NULL) {
+    if (remain == 0) {
+      path.push_back(root->val);
+      result.push_back(vector<int>(path.begin(), path.end()));
+      path.erase(--path.end());
+    }
+    return;
+  }
+  path.push_back(root->val);
+  if (root->left) _pathSum(root->left, remain, path, result);
+  if (root->right) _pathSum(root->right, remain, path, result);
+  path.erase(--path.end());
+  return;
+}
+
+vector<vector<int> > pathSum(TreeNode *root, int sum) {
+  vector<vector<int> > result;
+  list<int> path;
+  if (root == NULL) return result;
+  _pathSum(root, sum, path, result);
+  return result;
+}
+
+int main() {
+  TreeNode *root = new TreeNode(5);
+  root->left = new TreeNode(4);
+  root->right= new TreeNode(8);
+  root->left->left = new TreeNode(11);
+  root->right->left= new TreeNode(13);
+  root->right->right= new TreeNode(4);
+  root->left->left->left = new TreeNode(7);
+  root->left->left->right = new TreeNode(2);
+  root->right->right->right = new TreeNode(1);
+  root->right->right->left= new TreeNode(5);
+  vector<vector<int> > result = pathSum(root, 22);
+  print(result);
+  return 0;
+}
