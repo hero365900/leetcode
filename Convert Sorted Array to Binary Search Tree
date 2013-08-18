@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+void in_traversal(TreeNode *root) {
+  if (root == NULL) return;
+  in_traversal(root->left);
+  cout << root->val << ", ";
+  in_traversal(root->right);
+}
+
+TreeNode *_sortedArrayToBST(vector<int> &num, int start, int end) {
+  if (start >= end) return NULL;
+  int mid = (start + end - 1) >> 1;
+  TreeNode *root = new TreeNode(num[mid]);
+  root->left = _sortedArrayToBST(num, start, mid);
+  root->right = _sortedArrayToBST(num, mid + 1, end);
+  return root;
+}
+
+TreeNode *sortedArrayToBST(vector<int> &num) {
+  return _sortedArrayToBST(num, 0, num.size());
+}
+
+int main() {
+  TreeNode *root(NULL);
+  vector<int> data;
+  data.push_back(0);
+  data.push_back(1);
+  data.push_back(2);
+  data.push_back(3);
+  data.push_back(4);
+  root = sortedArrayToBST(data);
+  in_traversal(root);
+  cout << endl;
+  return 0;
+}
