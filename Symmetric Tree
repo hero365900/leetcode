@@ -1,0 +1,74 @@
+#include <iostream>
+#include <queue>
+#include <list>
+
+#include "../util/def.h"
+#include "../util/aux_func.h"
+
+using namespace std;
+
+void print_list(const list<TreeNode*> &row) {
+  list<TreeNode*>::const_iterator itr = row.begin();
+  while (itr != row.end()) {
+    if (*itr) cout << (*itr)->val << ", ";
+    else cout << "NULL, ";
+    ++itr;
+  }
+  cout << endl;
+}
+
+bool isPalindrome(const list<TreeNode*> &row) {
+  if (row.size() == 0 || row.size() == 1) return true;
+  list<TreeNode*>::const_iterator beg(row.begin()), end(--row.end());
+  while (end != beg && (++end) != beg) {
+    --end;
+    if (*beg == NULL && *end == NULL) {++beg; --end; continue;}
+    if (*beg == NULL || *end == NULL) return false;
+    if ((*beg)->val != (*end)->val) return false;
+    ++beg;
+    --end;
+  }
+  return true;
+}
+
+bool isSymmetric(TreeNode *root) {
+  if (root == NULL) return true;
+  list<TreeNode*> row;
+  queue<TreeNode*> q;
+  q.push(root);
+  TreeNode *cursor(NULL);
+  int last_level_num = 1;
+  int cur_level_num = 0;
+  while (!q.empty()) {
+    cursor = q.front();
+    q.pop();
+    --last_level_num;
+    row.push_back(cursor);
+    if (cursor) {
+      q.push(cursor->left);
+      q.push(cursor->right);
+      cur_level_num += 2;
+    }
+    if (last_level_num == 0) {
+      if (!isPalindrome(row)) return false;
+      row.clear();
+      if (q.empty()) break;
+      last_level_num = cur_level_num;
+      cur_level_num = 0;
+    }
+    //result.back().push_back(cursor->val);
+  }
+  return true;
+}
+
+int main() {
+  string line;
+  TreeNode *root(NULL);
+  vector<vector<int> > r;
+  while (cin >> line) {
+    root = loadTree(line);
+    cout << isSymmetric(root);
+    cout << endl;
+  }
+  return 0;
+}
