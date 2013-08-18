@@ -1,0 +1,82 @@
+#include <iostream>
+#include <algorithm>
+
+#include "../util/def.h"
+#include "../util/aux_func.h"
+
+using namespace std;
+
+TreeNode *_buildTree(vector<int> &preorder, vector<int>::const_iterator pre_beg, vector<int>::const_iterator pre_end,
+                     vector<int> &inorder, vector<int>::const_iterator in_beg, vector<int>::const_iterator in_end) {
+  int root_val = *pre_beg;
+  TreeNode *root =  new TreeNode(root_val);
+  vector<int>::const_iterator itr = find(in_beg, in_end, root_val);
+  int left_len = itr - in_beg;
+  int right_len = in_end - itr - 1;
+  if (itr == in_beg) {
+    root->left = NULL;
+  } else {
+    root->left = _buildTree(preorder, pre_beg + 1, pre_beg + 1 + left_len, inorder, in_beg, itr);
+  }
+
+  if (itr == in_end - 1) {
+    root->right = NULL;
+  } else {
+    root->right = _buildTree(preorder, pre_beg + 1 + left_len, pre_end, inorder, itr + 1, in_end);
+  }
+  return root;
+}
+
+TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
+  if (0 == inorder.size() || 0 == preorder.size() || inorder.size() != preorder.size()) return NULL;
+  return _buildTree(preorder, preorder.begin(), preorder.end(), inorder, inorder.begin(), inorder.end());
+}
+
+void in_traversal(TreeNode *root, vector<int> &path) {
+  if (root == NULL) return;
+  in_traversal(root->left, path);
+  path.push_back(root->val);
+  in_traversal(root->right, path);
+}
+
+void post_traversal(TreeNode *root, vector<int> &path) {
+  if (root == NULL) return;
+  post_traversal(root->left, path);
+  post_traversal(root->right, path);
+  path.push_back(root->val);
+}
+
+void pre_traversal(TreeNode *root, vector<int> &path) {
+  if (root == NULL) return;
+  path.push_back(root->val);
+  pre_traversal(root->left, path);
+  pre_traversal(root->right, path);
+}
+
+int main() {
+  string line;
+  vector<int> inorder;
+  vector<int> preorder;
+  TreeNode *root(NULL), *root2(NULL);
+  while (cin >> line) {
+    inorder.clear();
+    preorder.clear();
+    root = loadTree(line);
+    in_traversal(root, inorder);
+    pre_traversal(root, preorder);
+    cout << "inorder : ";
+    print_vec(inorder);
+    cout << "preorder : ";
+    print_vec(preorder);
+    root2 = buildTree(preorder, inorder);
+    inorder.clear();
+    preorder.clear();
+    in_traversal(root, inorder);
+    pre_traversal(root, preorder);
+    cout << "result inorder : ";
+    print_vec(inorder);
+    cout << "result preorder : ";
+    print_vec(preorder);
+  }
+  return 0;
+}
