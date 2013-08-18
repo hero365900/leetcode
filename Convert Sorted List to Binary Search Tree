@@ -1,0 +1,62 @@
+#include <iostream>
+using namespace std;
+
+struct ListNode {
+  int val;
+  ListNode *next;
+  ListNode(int x) : val(x), next(NULL) {}
+};
+
+struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+void in_traversal(TreeNode *root) {
+  if (root == NULL) return;
+  in_traversal(root->left);
+  cout << root->val << ", ";
+  in_traversal(root->right);
+}
+
+TreeNode *_sortedListToBST(ListNode *head, ListNode *end) {
+  if (head == NULL) return NULL;
+  if (head == end) return NULL;
+  ListNode *slow(head), *fast(head);
+  while (fast->next != end && fast->next->next != end) {
+    slow = slow->next;
+    fast = fast->next->next;
+  }
+  TreeNode *root = new TreeNode(slow->val);
+  root->left = _sortedListToBST(head, slow);
+  root->right = _sortedListToBST(slow->next, end);
+  return root;
+}
+TreeNode *sortedListToBST(ListNode *head) {
+  return _sortedListToBST(head, NULL);
+}
+
+ListNode* insert(ListNode *tail, int val) {
+  tail->next = new ListNode(val);
+  return tail->next;
+}
+
+int main() {
+  ListNode *head(NULL), *tail(NULL);
+  TreeNode *root(NULL);
+  head = new ListNode(0);
+  tail = head;
+  tail = insert(tail, 1);
+  tail = insert(tail, 2);
+  tail = insert(tail, 3);
+  tail = insert(tail, 4);
+  tail = insert(tail, 5);
+  tail = insert(tail, 6);
+  tail = insert(tail, 7);
+  root = sortedListToBST(head);
+  in_traversal(root);
+  cout << endl;
+  return 0;
+}
