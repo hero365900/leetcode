@@ -1,0 +1,45 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+
+#include "../util/def.h"
+#include "../util/aux_func.h"
+
+using namespace std;
+
+vector<vector<int> > levelOrder(TreeNode *root) {
+  vector<vector<int> > result;
+  if (root == NULL) return result;
+  queue<TreeNode*> q;
+  q.push(root);
+  q.push(NULL);
+  TreeNode *cursor(NULL);
+  result.push_back(vector<int>());
+  while (!q.empty()) {
+    cursor = q.front();
+    q.pop();
+    if (cursor == NULL) {
+      if (q.empty()) break;
+      result.push_back(vector<int>());
+      q.push(NULL);
+      continue;
+    }
+    result.back().push_back(cursor->val);
+    if (cursor->left) q.push(cursor->left);
+    if (cursor->right) q.push(cursor->right);
+  }
+  return result;
+}
+
+int main() {
+  string line;
+  TreeNode *root(NULL);
+  vector<vector<int> > r;
+  while (cin >> line) {
+    root = loadTree(line);
+    r = levelOrder(root);
+    print_matrix(r);
+    cout << endl;
+  }
+  return 0;
+}
