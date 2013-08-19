@@ -1,0 +1,64 @@
+#include <iostream>
+
+#include "../util/def.h"
+#include "../util/aux_func.h"
+
+using namespace std;
+
+bool in_order(TreeNode *root, TreeNode *ancestor, TreeNode** ret) {
+  if (root == NULL) return true;
+  TreeNode *pre(NULL), *last(NULL);
+  bool result = true;
+  result = in_order(root->left, ancestor, &pre);
+  if (!result) return result;
+  if (pre == NULL) pre = ancestor;
+  if (pre != NULL) {
+    if (root->val <= pre->val) {
+      //cout << root->val << " < " << pre->val << endl;
+      result = false;
+      return result;
+    }
+  }
+  result = in_order(root->right, root, &last);
+  if (!result) return result;
+  if (last == NULL) {*ret = root;}
+  else {*ret = last;}
+  return true;
+}
+
+bool _isValidBST(TreeNode *root, TreeNode **head, TreeNode **tail) {
+  if (root == NULL) {
+    *head = NULL;
+    *tail = NULL;
+    return true;
+  }
+  TreeNode *left_tail(NULL), *right_head(NULL);
+  if (!_isValidBST(root->left, head, &left_tail)) return false;
+  if (!_isValidBST(root->right, &right_head, tail)) return false;
+  if (left_tail && left_tail->val >= root->val) return false;
+  if (right_head && right_head->val <= root->val) return false;
+  if (*head == NULL) *head = root;
+  if (*tail == NULL) *tail = root;
+  return true;
+}
+
+bool isValidBST(TreeNode *root) {
+  // Mehtod 1
+  /*if (root == NULL) return true;
+  TreeNode *pre(NULL);
+  return in_order(root, NULL, &pre);*/
+  // Method 1
+  if (root == NULL) return true;
+  TreeNode *head(NULL), *tail(NULL);
+  return _isValidBST(root, &head, &tail);
+}
+
+int main() {
+  string line;
+  TreeNode *root(NULL);
+  while (cin >> line) {
+    root = loadTree(line);
+    cout << isValidBST(root) << endl;
+  }
+  return 0;
+}
