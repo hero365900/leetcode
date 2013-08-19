@@ -1,0 +1,42 @@
+#include <iostream>
+
+#include "../util/def.h"
+#include "../util/aux_func.h"
+
+using namespace std;
+
+TreeNode* in_order(TreeNode *root, TreeNode *ancestor, TreeNode **fst, TreeNode **snd) {
+  if (root == NULL) return NULL;
+  TreeNode *pre(NULL), *last(NULL);
+  pre = in_order(root->left, ancestor, fst, snd);
+  if (pre == NULL) pre = ancestor;
+  if (pre != NULL) {
+    if (root->val < pre->val) {
+      if (*fst == NULL) {*fst = pre; *snd = root;}
+      else {*snd = root;}
+    }
+  }
+  last = in_order(root->right, root, fst, snd);
+  if (last == NULL) return root;
+  return last;
+}
+
+void recoverTree(TreeNode *root) {
+  if (root == NULL) return;
+  TreeNode *fst(NULL), *snd(NULL);
+  in_order(root, NULL, &fst, &snd);
+  if (fst == NULL || snd == NULL) return;
+  swap(fst->val, snd->val);
+  //cout << fst->val << endl;
+  //cout << snd->val << endl;
+}
+
+int main() {
+  string line;
+  TreeNode *root(NULL);
+  while (cin >> line) {
+    root = loadTree(line);
+    recoverTree(root);
+  }
+  return 0;
+}
