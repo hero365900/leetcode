@@ -1,0 +1,50 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+bool isInterleave(string s1, string s2, string s3) {
+  if (s3.size() != (s1.size() + s2.size())) return false;
+  if (s1.size() == 0) return (s2 == s3);
+  if (s2.size() == 0) return (s1 == s3);
+  vector<bool> result(s3.size());
+  // true for s1, false for s2
+  int i(0), j(0), c(0);
+  while (c != s3.size()) {
+    if (s3[c] == s1[i]) {
+      result[c] = true;
+      ++i;
+      ++c;
+      continue;
+    }
+    if (s3[c] == s2[j]) {
+      result[c] = false;
+      ++j;
+      ++c;
+      continue;
+    }
+    while (c >= 1 && s3[c - 1] != s2[j]) {
+      if (s3[c - 1]) {
+        --i;
+      } else {
+        --j;
+      }
+      --c;
+    }
+    if (c < 1) return false;
+    --i;
+    result[c - 1] = false;
+    ++j;
+  }
+  return true;
+}
+
+int main() {
+  string a = "aabcc";
+  string b = "dbbca";
+  string c = "aadbbbaccc";
+  while (cin >> a >> b >> c) {
+    cout << isInterleave(a, b, c) << endl;
+  }
+  return 0;
+}
