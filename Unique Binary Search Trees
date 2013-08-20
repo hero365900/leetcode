@@ -27,13 +27,35 @@ int _numTrees(int start, int end, vector<vector<int> > &vec) {
   return total;
 }
 
+int _numTreesNoMem(int start, int end) {
+  // [start, end]
+  if (end - start == 0) { return 1; }
+  if (end - start == 1) {
+    return 1;
+  }
+  int total(0), left(0), right(0);
+  for (int i = start; i != end; ++i) {
+    if (i <= start) {left = 1;}
+    else {left = _numTreesNoMem(start, i);}
+    if (i + 1 == end) {right = 1;}
+    else {right = _numTreesNoMem(i + 1, end);}
+    total += left * right;
+  }
+  return total;
+}
+
 int numTrees(int n) {
   if (n == 0 || n == 1) return 1;
+  // Method 1 with table to record the solution of sub-problem
+  // 4ms in large test
   vector<vector<int> > vec(n + 1);
   for (int i = 0; i != vec.size(); ++i) {
     vec[i].assign(n + 1, -1);
   }
   return _numTrees(1, n + 1, vec);
+  // Mehtod 2 without table to record the solution of sub-problem
+  // 76ms in large test, much slower than Method 1
+  // return _numTreesNoMem(1, n + 1);
 }
 
 int main() {
