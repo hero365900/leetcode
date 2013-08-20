@@ -1,0 +1,104 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <iterator>
+using namespace std;
+
+struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+void _generateTrees(int start, int end, vector<vector<vector<TreeNode*> > > &vec) {
+  // [start, end]
+  if (end - start == 0) { return; }
+  if (end - start == 1) {
+    vec[start][end - 1].push_back(new TreeNode(start));
+    return;
+  }
+  //int total(0), left(0), right(0);
+  TreeNode *root(NULL);
+  vector<TreeNode*> *left(NULL), *right(NULL);
+  vector<TreeNode*> dummy;
+  dummy.push_back(NULL);
+  vector<TreeNode*>::const_iterator litr, ritr;
+  for (int i = start; i != end; ++i) {
+    if (i <= start) {left = NULL;}
+    else {
+      if (i > start && vec[start][i - 1].size() != 0) left = &vec[start][i - 1];
+      else {_generateTrees(start, i, vec); left = &vec[start][i - 1];}
+    }
+    if (i + 1 == end) {right = NULL;}
+    else {
+      if (i + 1 < end && vec[i + 1][end - 1].size() != 0) right = &vec[i + 1][end - 1];
+      else {_generateTrees(i + 1, end, vec); right = &vec[i + 1][end - 1];}
+    }
+    if (left == NULL) left = &dummy;
+    if (right == NULL) right = &dummy;
+    for (litr = left->begin(); litr != left->end(); ++litr) {
+      for (ritr = right->begin(); ritr != right->end(); ++ritr) {
+	root = new TreeNode(i);
+	root->left = *litr;
+	root->right = *ritr;
+	vec[start][end - 1].push_back(root);
+      }
+    }
+  }
+}
+
+vector<TreeNode*> generateTrees(int n) {
+  vector<TreeNode*> r;
+  if (n == 0) {
+    r.push_back(NULL);
+    return r;
+  }
+  vector<vector<vector<TreeNode*> > > vec(n + 1);
+  for (int i = 0; i != n + 1; ++i) {
+    vec[i] = vector<vector<TreeNode*> >(n + 1);
+  }
+  _generateTrees(1, n + 1, vec);
+  return vec[1][n];
+}
+
+void level_traversal(TreeNode *root) {
+  if (root == NULL) return;
+  queue<TreeNode*> q;
+  q.push(root);
+  q.push(NULL);
+  vector<int> vec;
+  TreeNode *cursor(NULL);
+  ostream_iterator<int> output(cout, ", ");
+  while (!q.empty()) {
+    cursor = q.front();
+    q.pop();
+    if (cursor == NULL) {
+      copy(vec.begin(), vec.end(), output);
+      cout << endl;
+      vec.clear();
+      if (q.empty()) break;
+      q.push(NULL);
+      continue;
+    }
+    vec.push_back(cursor->val);
+    if (cursor->left) q.push(cursor->left);
+    if (cursor->right) q.push(cursor->right);
+  }
+}
+
+int main() {
+  int num(0);
+  vector<TreeNode*> result;
+  while (cin >> num) {
+    result = generateTrees(num);
+    cout << "result.size() = " << result.size() << endl;
+    for (int i = 0; i != result.size(); ++i) {
+      // if (result[i] != NULL) cout << "result[" << i << "] = " << result[i]->val <<endl;
+      // else cout << "result[" << i << "] is NULL" << endl;
+      level_traversal(result[i]);
+      cout << "********************************" << endl;
+    }
+    cout << "==============================" << endl;
+  }
+}
