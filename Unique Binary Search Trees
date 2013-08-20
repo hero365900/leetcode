@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int _numTrees(int start, int end, vector<vector<int> > &vec) {
+  // [start, end]
+  if (end - start == 0) { return 1; }
+  if (end - start == 1) {
+    vec[start][end - 1] = 1;
+    return 1;
+  }
+  int total(0), left(0), right(0);
+  for (int i = start; i != end; ++i) {
+    if (i <= start) {left = 1;}
+    else {
+      if (i > start && vec[start][i - 1] != -1) left = vec[start][i - 1];
+      else left = _numTrees(start, i, vec);
+    }
+    if (i + 1 == end) {right = 1;}
+    else {
+      if (i + 1 < end && vec[i + 1][end - 1] != -1) right = vec[i + 1][end - 1];
+      else right = _numTrees(i + 1, end, vec);
+    }
+    total += left * right;
+  }
+  vec[start][end - 1] = total;
+  return total;
+}
+
+int numTrees(int n) {
+  if (n == 0 || n == 1) return 1;
+  vector<vector<int> > vec(n + 1);
+  for (int i = 0; i != vec.size(); ++i) {
+    vec[i].assign(n + 1, -1);
+  }
+  return _numTrees(1, n + 1, vec);
+}
+
+int main() {
+  int num(0);
+  while (cin >> num) {
+    cout << numTrees(num) << endl;
+  }
+}
