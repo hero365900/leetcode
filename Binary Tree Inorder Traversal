@@ -1,0 +1,28 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+void _inorderTraversal(TreeNode *root, vector<int> &vec) {
+  if (root == NULL) return;
+  _inorderTraversal(root->left, vec);
+  vec.push_back(root->val);
+  _inorderTraversal(root->right, vec);
+  return;
+}
+
+vector<int> inorderTraversal(TreeNode *root) {
+  vector<int> result;
+  _inorderTraversal(root, result);
+  return result;
+}
+
+int main() {
+  return 0;
+}
