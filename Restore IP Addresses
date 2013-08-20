@@ -1,0 +1,50 @@
+#include <iostream>
+#include <cstdlib>
+
+#include "../util/aux_func.h"
+
+using namespace std;
+
+vector<string> restoreIpAddresses(string s) {
+  vector<string> result;
+  string part;
+  int num(0);
+  if (s.size() < 4) return result;
+  int fst(1), snd(1),  trd(1);
+  for (fst = 1; fst <= 3; ++fst) {
+    if (fst > 1 && s[0] == '0') continue;
+    num = atoi(s.substr(0, fst).c_str());
+    if (num < 0 || num > 255) break;
+    for (snd = 1; snd <= 3; ++snd) {
+      if (fst + snd >= s.size() - 1) break;
+      if (snd > 1 && s[fst] == '0') continue;
+      num = atoi(s.substr(fst, snd).c_str());
+      if (num < 0 || num > 255) break;
+      for (trd = 1; trd <=3; ++trd) {
+        if (fst + snd + trd >= s.size()) break;
+        if (trd > 1 && s[fst + snd] == '0') break;
+        num = atoi(s.substr(fst + snd, trd).c_str());
+        if (s.size() - fst - snd -trd > 1 && s[fst + snd + trd] == '0') continue;
+        if (num < 0 || num > 255) continue;
+        if ((s.size() - fst - snd - trd) > 3) continue;
+        if ((s.size() - fst - snd - trd) <= 0) break;
+        part = s.substr(fst + snd + trd);
+        num = atoi(part.c_str());
+        if (num >= 0 && num <= 255) {
+          result.push_back("");
+          result.back() = s.substr(0, fst) + "." + s.substr(fst, snd) + "." + s.substr(fst + snd, trd) + "." + s.substr(fst + snd + trd);
+        }
+      }
+    }
+  }
+}
+
+int main() {
+  string line;
+  vector<string> result;
+  while (cin >> line) {
+    result = restoreIpAddresses(line);
+    print_vec(result);
+  }
+  return 0;
+}
