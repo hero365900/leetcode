@@ -1,0 +1,58 @@
+#include <iostream>
+#include <vector>
+#include <iterator>
+#include <algorithm>
+using namespace std;
+
+void print(const vector<vector<int> > &data) {
+  ostream_iterator<int> output(cout, ", ");
+  for (int i = 0; i != data.size(); ++i) {
+    copy(data[i].begin(), data[i].end(), output);
+    cout << endl;
+  }
+}
+
+vector<vector<int> > subsetsWithDup(vector<int> &S) {
+  int sz(1), layer(0);
+  vector<int> indices(S.size(), 0);
+  vector<vector<int> > result;
+  result.push_back(vector<int>());
+  sort(S.begin(), S.end());
+  if (S.size() == 0) return result;
+  vector<int> tmp(S.size(), 0); 
+  for (sz = 1; sz <= S.size(); ++sz) {
+    for (int i = 0; i != sz; ++i) {
+      indices[i] = i;
+      tmp[i] = S[i];
+    }
+    while (indices[0] <= S.size() - sz) {
+      for (; indices[sz - 1] != S.size(); ++indices[sz - 1]) {
+	tmp[sz - 1] = S[indices[sz - 1]];
+	result.push_back(vector<int>(tmp.begin(), tmp.begin() + sz));
+      }
+      layer = sz - 1;
+      while (layer > 0 && indices[layer] > S.size() - sz + layer) {
+	++indices[layer - 1]; 
+	--layer;
+      }
+      if (layer == 0 && indices[0] > S.size() - sz) break;  // sz need +1
+      tmp[layer] = S[indices[layer]];
+      ++layer;
+      for (; layer < sz; ++layer) {
+	indices[layer] = indices[layer - 1] + 1;
+	tmp[layer] = S[indices[layer]];
+      }
+    }
+  }
+  return result;
+  //return vector<vector<int> >();
+}
+
+int main() {
+  int a[] = {3, 1, 2, 3};
+  vector<int> s((int*)a, (int*)a + 3);
+  vector<vector<int> > r;
+  r = subsetsWithDup(s);
+  print(r);
+  return 0;
+}
