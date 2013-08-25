@@ -1,0 +1,52 @@
+#include <iostream>
+
+#include "../util/def.h"
+#include "../util/aux_func.h"
+
+using namespace std;
+
+ListNode *partition(ListNode *head, int x) {
+  if (head == NULL || head->next == NULL) return head;
+  ListNode *i(NULL), *j(head), *last(NULL);
+  while (j) {
+    if (j->val < x) {
+      if (last == NULL) {
+        i = j;
+        j = j->next;
+        continue;
+      } else {
+        last->next = j->next;
+        if (i == NULL) {
+          j->next = head;
+          head = j;
+        } else {
+          j->next = i->next;
+          i->next = j;
+        }
+        i = j;
+        j = last->next;
+      }
+    } else {
+      last = j;
+      j = j->next;
+    }
+  }
+  return head;
+}
+
+int main() {
+  string line;
+  int x;
+  ListNode *head;
+  while (cin >> line >> x) {
+    head = loadList(line);
+    cout << "list : ";
+    print_list(head);
+    cout << "pivot : " << x << endl;
+    head = partition(head, x);
+    cout << "result : ";
+    print_list(head);
+    cout << endl;
+  }
+  return 0;
+}
