@@ -1,0 +1,61 @@
+#include <iostream>
+
+#include "../util/aux_func.h"
+
+using namespace std;
+
+int findMaxSum(const vector<int> &vec, int m) {
+  int maxSum(0), sum(0);
+  for (int i = 0; i != vec.size(); ++i) {
+    if (vec[i] == m) {
+      ++sum;
+    } else {
+      maxSum = (sum > maxSum ? sum : maxSum);
+      sum = 0;
+    }
+  }
+  maxSum = (sum > maxSum ? sum : maxSum);
+  return maxSum * m;
+}
+
+int maximalRectangle(vector<vector<char> > &matrix) {
+  int maxarea(0), cnt(0), tmp(0);
+  if (matrix.size() == 0) return 0;
+  vector<int> row(matrix[0].size());
+  for (int start = 0; start != matrix.size(); ++start) {
+    row.assign(row.size(), 0);
+    cnt = 0;
+    for (int end = start; end != matrix.size(); ++end) {
+      ++cnt;
+      for (int k = 0; k != row.size(); ++k) {
+	row[k] += (matrix[end][k] == '1' ? 1 : 0);
+      }
+      tmp = findMaxSum(row, cnt);
+      maxarea = (tmp > maxarea ? tmp : maxarea);
+    }
+  }
+  return maxarea;
+}
+
+vector<vector<char> > loadMatrix() {
+  string line;
+  vector<string> row;
+  vector<vector<char> > result;
+  while (cin >> line) {
+    row.clear();
+    result.push_back(vector<char>());
+    split(line, row, ",");
+    for (int i = 0; i != row.size(); ++i) {
+      result.back().push_back(row[i][0]);
+    }
+  }
+  return result;
+}
+
+int main() {
+  vector<vector<char> > buf = loadMatrix();
+  print_matrix(buf, " ");
+  cout << buf.size() << endl;
+  cout << maximalRectangle(buf) << endl;
+  return 0;
+}
