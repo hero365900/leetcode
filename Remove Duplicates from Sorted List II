@@ -1,0 +1,50 @@
+#include <iostream>
+
+#include "../util/def.h"
+#include "../util/aux_func.h"
+
+using namespace std;
+
+ListNode *deleteDuplicates(ListNode *head) {
+  if (head == NULL) return head;
+  ListNode *start(head), *p(head->next), *tail(NULL);
+  while (p) {
+    if (p->val != start->val) {
+      if (p == start->next) {
+	if (tail) {
+	  tail->next = start;
+	} else {
+	  head = start;
+	}
+	tail = start;
+      }
+      start = p;
+    }
+    p = p->next;
+  }  // end while
+  if (start->next == p) {
+    if (tail) tail->next = start;
+    else head = start;
+    tail = start;
+  }
+  if (tail) { 
+    tail->next = NULL;
+    return head;
+  } else {
+    return NULL;
+  }
+}
+
+int main() {
+  string line;
+  ListNode *head(NULL);
+  while (cin >> line) {
+    head = loadList(line);
+    cout << "original: ";
+    print_list(head);
+    head = deleteDuplicates(head);
+    cout << "   after: ";
+    print_list(head);
+  }
+  return 0;
+}
