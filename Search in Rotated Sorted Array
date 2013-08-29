@@ -1,0 +1,43 @@
+#include <iostream>
+
+#include "../util/aux_func.h"
+
+using namespace std;
+
+int _search(int A[], int target, int beg, int end) {
+  if (beg > end) return -1;
+  if (beg == end) return (A[beg] == target ? beg : -1);
+  int mid = (beg + end) / 2;
+  if (target == A[mid]) return mid;
+  if (A[mid] < A[beg]) {
+    // left is not ordered
+    if (target < A[mid] || target >= A[beg]) {
+      // target must in the left part
+      return _search(A, target, beg, mid - 1);
+    } else {
+      return _search(A, target, mid + 1, end);
+    }
+  } else {
+    // right is not ordered
+    if (target > A[mid] || target < A[beg]) {
+      return _search(A, target, mid + 1, end);
+    } else {
+      return _search(A, target, beg, mid - 1);
+    }
+  }
+}
+
+int search(int A[], int n, int target) {
+  return _search(A, target, 0, n - 1);
+}
+
+int main() {
+  int a[100] = {};
+  int n(0), target(0);
+  string line;
+  while (cin >> line >> target) {
+    n = loadArray(line, a);
+    cout << search(a, n, target) << endl;
+  }
+  return 0;
+}
