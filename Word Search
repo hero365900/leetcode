@@ -1,0 +1,70 @@
+#include <iostream>
+
+#include "../util/aux_func.h"
+
+using namespace std;
+
+bool dfs(vector<vector<char> > &board, vector<vector<bool> > &visited, string word, int idx, int start_x, int start_y) {
+  if (idx >= word.length() - 1) return true;
+  bool result = false;
+  visited[start_x][start_y] = true;
+  // up
+  if (start_x > 0 && !visited[start_x - 1][start_y] && 
+      board[start_x - 1][start_y] == word[idx + 1]) {
+    result |= dfs(board, visited, word, idx + 1, start_x - 1, start_y);
+  }
+  // right
+  if (!result && start_y < board[0].size() - 1 && !visited[start_x][start_y + 1] &&
+      board[start_x][start_y + 1] == word[idx + 1]) {
+    result |= dfs(board, visited, word, idx + 1, start_x, start_y + 1);
+  }
+  // down
+  if (!result && start_x < board.size() - 1 && !visited[start_x + 1][start_y] &&
+      board[start_x + 1][start_y] == word[idx + 1]) {
+    result |= dfs(board, visited, word, idx + 1, start_x + 1, start_y);
+  }
+  // left
+  if (!result && start_y > 0 && !visited[start_x][start_y - 1] &&
+      board[start_x][start_y - 1] == word[idx + 1]) {
+    result |= dfs(board, visited, word, idx + 1, start_x, start_y - 1);
+  }
+  visited[start_x][start_y] = false;
+  return result;
+}
+
+bool exist(vector<vector<char> > &board, string word) {
+  if (board.size() == 0) return false;
+  if (word.empty()) return true;
+  int cols(board[0].size()), rows(board.size());
+  vector<vector<bool> > visited(rows);
+  for (int i = 0; i != rows; ++i) {
+    visited[i].resize(cols);
+    visited[i].assign(cols, false);
+  }
+  bool result = false;
+  for (int i = 0; i != rows; ++i) {
+    for (int j = 0; j != cols; ++j) {
+      if (board[i][j] != word[0]) continue;
+      result |= dfs(board, visited, word, 0, i, j);
+      if (result) return true;
+    }
+  }
+  return result;
+}
+
+void loadMatrix(vector<vector<char> > &board) {
+  string line;
+  while (cin >> line) {
+    board.push_back(vector<char>(line.c_str(), line.c_str() + line.length()));
+  }
+}
+
+int main() {
+  string word;
+  cin >> word;
+  vector<vector<char> > board;
+  loadMatrix(board);
+  print_matrix(board);
+  cout << exist(board, word) << endl;
+  return 0;
+}
