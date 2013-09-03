@@ -5,30 +5,39 @@
 using namespace std;
 
 void sortColors(int A[], int n) {
-  int cnt[] = {0, 0, 0};
-  for (int i = 0; i != n; ++i) {
-    ++cnt[A[i]];
-  }
-  int i(0), start(0), tmp(0);
-  while (i != 3) {
-    for (int t = 0; t != cnt[i]; ++t) {
-      A[start + t] = i;
+  if (n == 0) return;
+  int i(-1), j(0), k(n - 1);
+  while (j <= k) {
+    if (A[j] == 1) {
+      ++j;
+      continue;
     }
-    start += cnt[i];
-    ++i;
+    if (A[j] == 0) {
+      ++i;
+      swap(A[i], A[j]);
+      ++j;
+      continue;
+    }
+    if (A[j] == 2) {
+      while (j < k && A[k] == 2) {
+        --k;
+      }
+      if (j == k) break;
+      swap(A[j], A[k]);
+    }
   }
 }
 
 int main() {
   int a[100];
-  int n;
+  int n(0);
   string line;
   while (cin >> line) {
     n = loadArray(line, a);
-    cout << "ori : ";
+    cout << "Ori : ";
     print_arr(a, n);
     sortColors(a, n);
-    cout << "aft : ";
+    cout << "Aft : ";
     print_arr(a, n);
   }
   return 0;
