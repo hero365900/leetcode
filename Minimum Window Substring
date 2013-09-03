@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+#include <list>
+
+#include "../util/aux_func.h"
+
+using namespace std;
+
+string minWindow(string S, string T) {
+  vector<list<int> > pos(52);
+  for (int i = 0; i != T.length(); ++i) {
+    if (T[i] >= 'A' && T[i] <= 'Z') {
+      pos[T[i] - 'A'].push_back(-1);
+    } else {
+      pos[T[i] - 'a' + 26].push_back(-1);
+    }
+  }
+  int idx(0), min_idx(-1), max_idx(-1), min_len(S.length() + 1), min_pos(0);
+  bool recal(false), found(false);
+  for (int i = 0; i != S.length(); ++i) {
+    if (S[i] >= 'A' && S[i] <= 'Z') {
+      idx = S[i] - 'A';
+    } else {
+      idx = S[i] - 'a' + 26;
+    }
+    if (0 == pos[idx].size()) continue;
+    if (min_idx == -1 || pos[idx].front() == min_idx) {
+      min_idx = S.length();
+      max_idx = -1;
+      recal = true;
+    }
+    pos[idx].pop_front();
+    pos[idx].push_back(i);
+    // cout << S[i] << " --> " << pos[idx].front() << endl;
+    if (recal) {
+      found = true;
+      for (int i = 0; i != 52; ++i) {
+	if (pos[i].empty()) continue;
+	if (pos[i].front() == -1) {
+	  found = false;
+	  min_idx = -1;
+	  break;
+	}
+	min_idx = (min_idx == -1 ? pos[i].front() : min(pos[i].front(), min_idx));
+	max_idx = (max_idx == -1 ? pos[i].back() : max(pos[i].back(), max_idx));
+      }
+      if (found) {
+	// cout << "min_idx = " << min_idx << endl;
+	// cout << "min_len" << endl;
+	if ((max_idx - min_idx + 1) < min_len) {
+	  min_len = max_idx - min_idx + 1;
+	  min_pos = min_idx;
+	}
+	// min_len = ((max_idx - min_idx + 1) < min_len ? (max_idx - min_idx + 1) : min_len);
+      }
+      recal = false;
+    }
+  }
+  if (!found) return "";
+  return S.substr(min_pos, min_len);
+}
+
+int main() {
+  string s, t, result;
+  while (cin >> s >> t) {
+    cout << s << endl << t << endl;
+    result = minWindow(s, t);
+    if (result.empty()) {
+      cout << "NOT FOUND" << endl;
+    } else {
+      cout << result << endl;
+    }
+  }
+  return 0;
+}
