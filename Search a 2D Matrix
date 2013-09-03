@@ -1,0 +1,115 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+
+#include "../util/aux_func.h"
+
+using namespace std;
+
+
+// Method 1 : O(logn)
+bool searchMatrix(vector<vector<int> > &matrix, int target) {
+  if (matrix.size() == 0) return false;
+  //cout << "target = " << target << endl;
+  int start(0), end(matrix.size() - 1), mid(0), line_idx;
+  while (start <= end) {
+    //cout << "start = " << start << " end = " << end << endl;
+    if (target == matrix[start][0] || target == matrix[end][0]) {
+      return true;
+    }
+    if (start == end) {
+      if (target < matrix[start][0]) {
+        if (start == 0) { 
+          // cout << "start == 0" << endl; 
+          return false;
+        }
+        //cout << "row = " << start - 1 << " --> " << matrix[start - 1][0] << endl;
+        line_idx = start - 1;
+        break;
+      } else {
+        //cout << "row = " << start << " --> " << matrix[start][0] << endl;
+        line_idx = start;
+        break;
+      }
+    }
+    if (end - start == 1) {
+      if (target > matrix[end][0]) {
+        //cout << "row = " << end << " --> " << matrix[end][0] << endl;
+        line_idx = end;
+      } else {
+        //cout << "row = " << start << " --> " << matrix[start][0] << endl;
+        line_idx = start;
+      }
+      break;
+    }
+    mid = (start + end) / 2;
+    if (matrix[mid][0] == target) { 
+      // cout << "Found" << endl; 
+      return true;
+    }
+    if (target < matrix[mid][0]) end = mid - 1;
+    else start = mid;
+  } // end while
+  if (target > matrix[line_idx].back()) return false;
+  start = 0;
+  end = matrix[line_idx].size() - 1;
+  while (start <= end) {
+    mid = (start + end) / 2;
+    if (target == matrix[line_idx][mid]) return true;
+    if (target > matrix[line_idx][mid]) {
+      start = mid + 1;
+    } else {
+      end = mid - 1;
+    }
+  }
+  return false;
+}
+
+/*
+// Method 2 : O(n)
+// Also OK in leetcode, but time consumption is longer than method 1
+bool searchMatrix(vector<vector<int> > &matrix, int target) {
+  int rows = matrix.size();
+  if (0 == rows) return false;
+  int row_idx(rows - 1), col_idx(0);
+  while (row_idx >= 0 && target < matrix[row_idx][0]) { --row_idx; }
+  if (row_idx < 0) return false;
+  for (int i = 0; i != matrix[row_idx].size(); ++i) {
+    if (target == matrix[row_idx][i]) return true;
+  }
+  return false;
+}
+*/
+
+void loadMatrix(vector<vector<int> > &matrix) {
+  vector<string> tmp;
+  string line;
+  while (cin >> line) {
+    tmp.clear();
+    split(line, tmp, ",");
+    matrix.push_back(vector<int>(tmp.size(), 0));
+    for (int i = 0; i != tmp.size(); ++i) {
+      matrix.back()[i] = atoi(tmp[i].c_str());
+    }
+  }
+}
+int main() {
+  vector<vector<int> > matrix;
+  loadMatrix(matrix);
+  print_matrix(matrix);
+  cout << searchMatrix(matrix, 0) << endl;
+  cout << searchMatrix(matrix, 3) << endl;
+  cout << searchMatrix(matrix, 7) << endl;
+  cout << searchMatrix(matrix, 9) << endl;
+  cout << searchMatrix(matrix, 10) << endl;
+  cout << searchMatrix(matrix, 11) << endl;
+  cout << searchMatrix(matrix, 12) << endl;
+  cout << searchMatrix(matrix, 21) << endl;
+  cout << searchMatrix(matrix, 24) << endl;
+  cout << searchMatrix(matrix, 31) << endl;
+  cout << searchMatrix(matrix, 36) << endl;
+  cout << searchMatrix(matrix, 39) << endl;
+  cout << searchMatrix(matrix, 31) << endl;
+  cout << searchMatrix(matrix, 41) << endl;
+  return 0;
+}
