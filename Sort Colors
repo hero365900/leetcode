@@ -1,0 +1,35 @@
+#include <iostream>
+
+#include "../util/aux_func.h"
+
+using namespace std;
+
+void sortColors(int A[], int n) {
+  int cnt[] = {0, 0, 0};
+  for (int i = 0; i != n; ++i) {
+    ++cnt[A[i]];
+  }
+  int i(0), start(0), tmp(0);
+  while (i != 3) {
+    for (int t = 0; t != cnt[i]; ++t) {
+      A[start + t] = i;
+    }
+    start += cnt[i];
+    ++i;
+  }
+}
+
+int main() {
+  int a[100];
+  int n;
+  string line;
+  while (cin >> line) {
+    n = loadArray(line, a);
+    cout << "ori : ";
+    print_arr(a, n);
+    sortColors(a, n);
+    cout << "aft : ";
+    print_arr(a, n);
+  }
+  return 0;
+}
