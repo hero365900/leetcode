@@ -1,0 +1,42 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int minDistance(string word1, string word2) {
+  if (word1.empty() || word2.empty()) return max(word1.length(), word2.length());
+  int len1 = word1.length();
+  int len2 = word2.length();
+  vector<vector<int> > board(len1 + 1);
+  for (int i = 0; i != len1 + 1; ++i) {
+    board[i] = vector<int>(len2 + 1, 0);
+  }
+  for (int i = 0; i != len2 + 1; ++i) {
+    board[0][i] = i;
+  }
+  for (int i = 0; i != len1 + 1; ++i) {
+    board[i][0] = i;
+  }
+
+  int tmp(0);
+  int min_val(len1 + len2 + 1);
+  for (int i = 1; i != len1 + 1; ++i) {
+    for (int j = 1; j != len2 + 1; ++j) {
+      tmp = (word1[i - 1] == word2[j - 1] ? 0 : 1);
+      min_val = min(board[i - 1][j] + 1, board[i][j - 1] + 1);
+      min_val = min(min_val, board[i - 1][j - 1] + tmp);
+      board[i][j] = min_val;
+    }
+  }
+  return board[len1][len2];
+}
+
+int main() {
+  string s1, s2;
+  while (cin >> s1 >> s2) {
+    cout << "s1: " << s1 << endl;
+    cout << "s2: " << s2 << endl;
+    cout << minDistance(s1, s2) << endl;
+  }
+  return 0;
+}
