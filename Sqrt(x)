@@ -1,0 +1,36 @@
+#include <iostream>
+#include <bitset>
+
+using namespace std;
+
+int sqrt(int x) {
+  if (x <= 0) return 0;
+  unsigned int root(0), rem(0), devisor(0);
+  unsigned int a = x;
+  for (int i = 0; i != sizeof(int) * 8 / 2; ++i) {
+    root = root << 1;
+    /*cout << "i = " << i << "  rem = " << bitset<32>(rem) << endl;
+    cout << "i = " << i << "  rem << 2 = " << bitset<32>(rem << 2) << endl;
+    cout << "i = " << i << "    a = " << bitset<32>(a) << endl;
+    cout << "i = " << i << "    a >>30 = " << bitset<32>(a >> 30) << endl;*/
+    rem = (rem << 2) | (a >> (sizeof(int) * 8 - 2));
+    a = a << 2;
+    devisor = (root << 1) + 1;
+    if (rem >= devisor) {
+      rem -= devisor;
+      ++root;
+    }
+  }
+  /*if (rem != 0) {
+    cout << "Not sqrt int" << endl;
+  }*/
+  return root;
+}
+
+int main() {
+  int n;
+  while (cin >> n) {
+    cout << sqrt(n) << endl;
+  }
+  return 0;
+}
