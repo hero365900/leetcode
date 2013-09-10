@@ -1,0 +1,56 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+string simplifyPath(string path) {
+  vector<string> path_vec;
+  if (path.empty()) return "";
+  if (path[0] != '/') return "";
+  int i = 1;
+  int next_pos = 1;
+  int start(1), end(start + 1);
+  string name("/");
+  path_vec.push_back(name);
+
+  while (start < path.length()) {
+    while (start < path.length() && path[start] == '/') {++start;}
+    if (start >= path.length()) break;
+    if (next_pos < 1) next_pos = 1;
+    end = start + 1;
+    while (end < path.length() && path[end] != '/') {
+      ++end;
+    }
+    // [start, end)
+    name = path.substr(start, end - start);
+    start = end + 1;
+    if (name == "..") {
+      --next_pos;
+      continue;
+    }
+    if (name == ".") {
+      continue;
+    }
+    if (path_vec.size() == next_pos) {
+      path_vec.push_back(name);
+    } else {
+      path_vec[next_pos] = name;
+    }
+    ++next_pos;
+  }
+  if (next_pos <= 1) return "/";
+  string result;
+  for (int i = 1; i != next_pos; ++i) {
+    result += "/" + path_vec[i];
+  }
+  return result;
+}
+
+int main() {
+  string s;
+  while (cin >> s) {
+    cout << s << endl;
+    cout << simplifyPath(s) << endl;
+  }
+  return 0;
+}
